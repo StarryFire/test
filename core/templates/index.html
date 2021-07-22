@@ -1,0 +1,66 @@
+{% extends 'admin/base.html' %}
+{% block extrastyle %}
+{{ block.super }}
+<link href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/lux/bootstrap.min.css" rel="stylesheet" integrity="sha384-hVpXlpdRmJ+uXGwD5W6HZMnR9ENcKVRn855pPbuI/mwPIEKAuKgTKgGksVGmlAvt" crossorigin="anonymous">
+<style>
+    span.readonly{
+        width: 100%;
+    }
+
+    #content {
+    	margin: 20px 100px;
+    	padding: 20px;
+        height: 700px;
+    }
+
+    #create-deployment {
+        margin-left: 240px;
+        display: flex;
+        width: 100%;
+        text-align: center;
+    }
+
+    #create-deployment > div {
+        width: 20%;
+        min-height: 500px;
+        padding: 20px;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div id="create-deployment">
+    <div>
+        <form name="flags" action="prod/" method="post">{% csrf_token %}
+            <button type="submit" class="btn btn-primary"> Deploy to Prod </button>
+            <fieldset>
+            <legend></legend>
+            <div class="form-check">
+                {% for opt in flag_prod_choices %}
+                <div>
+                    <input class="form-check-input" type="checkbox" name="flags" value="{{ opt }}">
+                    <label class="form-check-label" for="{{ opt }}">
+                        {{ opt }}
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+            </fieldset>
+        </form>
+    </div>
+    <div>
+        <form name="flags" action="celery/" method="post">{% csrf_token %}
+                <fieldset>
+            <legend></legend>
+            <div class="form-check"> </div>
+            </fieldset>
+        
+        <button type="submit" class="btn btn-primary"> Deploy to Celery </button>
+        </form>
+    </div>
+                    
+</div>
+
+{% endblock %}

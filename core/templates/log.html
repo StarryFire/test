@@ -1,0 +1,68 @@
+{% extends 'admin/base.html' %}
+{% block extrastyle %}
+  {{ block.super }}
+  <link href="https://fonts.googleapis.com/css?family=Inconsolata&display=swap" rel="stylesheet"> 
+    <style>
+    span.readonly{
+        width: 100%;
+    }
+
+    #content {
+    	margin: 0;
+    	padding: 0;
+        background-color: #eee;
+        height: 700px;
+    }
+
+    #log_view {
+        font-family: 'Inconsolata', monospace;
+    	color: #000;
+    	background-color: #eee;
+    	list-style: none;
+    }
+
+    #log_view_ul > li {
+        list-style-type: none;
+        font-size: 1.2em;
+    }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+
+<pre>
+<div id="log_view">
+	<ul id="log_view_ul"> </ul> <br>
+</div>
+</pre>
+<script src="https://sr-static-and-media-files-prod.s3-ap-southeast-1.amazonaws.com/deploy/reconnecting-websocket.min.js"></script>
+<script>
+var last_position = 0;
+
+function appendToLogView(data) {
+    const obj = JSON.parse(data['data']);
+    var ul = document.getElementById("log_view_ul");
+    var li = document.createElement("li");
+        last_position = obj['last_position'];
+        li.appendChild(document.createTextNode(obj['stdout']));
+        ul.appendChild(li);
+        window.scrollTo(0,document.body.scrollHeight);
+}
+
+const ws = new ReconnectingWebSocket('wss://' + window.location.host + '/ws/logs/{{ deploy_id }}/tail/');
+ws.onmessage = appendToLogView;
+ws.onerror = console.log;
+ws.onopen = function(args) {
+        setInterval(() => {
+        console.log("sending: {{ deploy_id }} last_position:", last_position);
+
+        ws.send(JSON.stringify({
+            "deploy_id": parseInt("{{ deploy_id }}"), 
+            "last_position": last_position,
+        }));
+    }, 1000);
+}
+</script>
+
+{% endblock %}
