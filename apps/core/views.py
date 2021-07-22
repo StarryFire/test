@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from core.models import Deploy
+from apps.core.models import Deploy
 
 logger = logging.getLogger(__name__)
 
